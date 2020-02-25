@@ -46,6 +46,11 @@ class WeatherAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         notifyItemRangeInserted(0, weatherList.size)
     }
 
+    fun clearAll() {
+        weatherList.clear()
+        notifyDataSetChanged()
+    }
+
     override fun getItemViewType(position: Int): Int {
         return if (position == _header) _header else _items
     }

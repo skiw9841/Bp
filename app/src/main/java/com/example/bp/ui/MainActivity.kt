@@ -1,7 +1,6 @@
 package com.example.bp.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -36,10 +35,12 @@ class MainActivity : AppCompatActivity() {
         /* observe */
         subscribeData()
 
+        /* swipe refresh */
+        setSwipeRefresh()
+
         if(savedInstanceState == null) { // for only first
             /* request query */
-            viewModel.requestLocationLiveData.postValue("se")
-            binding.progressBar.visibility = View.VISIBLE
+            requestQuery()
         }
     }
 
@@ -61,9 +62,27 @@ class MainActivity : AppCompatActivity() {
                 viewModel.requestWeatherLiveData.postValue(woeidQueue.poll())
             } else {
                 adapter.notifyItemAll() // draw list
-                binding.progressBar.visibility = View.GONE
+                binding.swipe.isRefreshing = false
             }
         })
+    }
+
+    private fun setSwipeRefresh() {
+        binding.swipe.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light
+        )
+        binding.swipe.setOnRefreshListener {
+            requestQuery()
+        }
+    }
+
+    fun requestQuery() {
+        adapter.clearAll()
+        viewModel.requestLocationLiveData.postValue("se")
+        binding.swipe.isRefreshing = true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
